@@ -338,7 +338,7 @@ $L(\hat y,y) = \ \sum_{t = 1}^{T_{x}}{L^{< t >}(\hat  y^{< t >},y^{< t >})}$
 许多**GRU**的想法都来分别自于**Yu Young Chang, Kagawa，Gaza Hera, Chang Hung Chu**和
 **Jose Banjo**的两篇论文。我再引用上个视频中你已经见过的这个句子，“**The cat, which already ate……, was full.**”，你需要记得猫是单数的，为了确保你已经理解了为什么这里是**was**而不是**were**，“**The cat was full.**”或者是“**The cats were full**”。当我们从左到右读这个句子，**GRU**单元将会有个新的变量称为$c$，代表细胞（**cell**），即记忆细胞（下图编号1所示）。记忆细胞的作用是提供了记忆的能力，比如说一只猫是单数还是复数，所以当它看到之后的句子的时候，它仍能够判断句子的主语是单数还是复数。于是在时间$t$处，有记忆细胞$c^{<t>}$，然后我们看的是，**GRU**实际上输出了激活值$a^{<t>}$，$c^{<t>} = a^{<t>}$（下图编号2所示）。于是我们想要使用不同的符号$c$和$a$来表示记忆细胞的值和输出的激活值，即使它们是一样的。我现在使用这个标记是因为当我们等会说到**LSTMs**的时候，这两个会是不同的值，但是现在对于**GRU**，$c^{<t>}$的值等于$a^{<t>}$的激活值。
 
-所以这些等式表示了**GRU**单元的计算，在每个时间步，我们将用一个候选值重写记忆细胞，即${\tilde{c}}^{<t>}$的值，所以它就是个候选值，替代了$c^{<t>}$的值。然后我们用**tanh**激活函数来计算，${\tilde{c}}^{<t>} =tanh(W_{c}\left\lbrack c^{<t-1>},x^{<t>} \right\rbrack +b_{c})$，所以${\tilde{c}}^{<t>}$的值就是个替代值，代替表示$c^{<t>}$的值（下图编号3所示）。
+所以这些等式表示了**GRU**单元的计算，在每个时间步，我们将计算一个重写记忆细胞的候选值，即${\tilde{c}}^{<t>}$的值，所以它就是个候选值，替代了$c^{<t>}$的值。然后我们用**tanh**激活函数来计算，${\tilde{c}}^{<t>} =tanh(W_{c}\left\lbrack c^{<t-1>},x^{<t>} \right\rbrack +b_{c})$，所以${\tilde{c}}^{<t>}$的值就是个替代值，代替表示$c^{<t>}$的值（下图编号3所示）。
 
 ![](../images/5e55fb9f6de649031e7f9a4b249f4fea.png)
 
@@ -434,37 +434,50 @@ ${\tilde{c}}^{<t>}$，这是代替记忆细胞的候选值，然后我们使用�
 
 ![ST](../images/LSTM.png)
 
+​																													$\hat{y}=\sigma(W_y a^{<t>} + b_{y})$ 
+
 ![STM_rn](../images/LSTM_rnn.png)
 
 
 
 **LSTM**反向传播计算：
 
+对于一个 **unit** 已知 $da_{next}$ 和 $dc_{next}$ 
+
 **门求偏导：**
 
-$d \Gamma_o^{\langle t \rangle} = da_{next}*\tanh(c_{next}) * \Gamma_o^{\langle t \rangle}*(1-\Gamma_o^{\langle t \rangle})\tag{1}$
+$d \Gamma_o^{\langle t \rangle} = da_{next}*\tanh(c_{next})  \tag{1}$
 
-$d\tilde c^{\langle t \rangle} = dc_{next}*\Gamma_i^{\langle t \rangle}+ \Gamma_o^{\langle t \rangle} (1-\tanh(c_{next})^2) * i_t * da_{next} * \tilde c^{\langle t \rangle} * (1-\tanh(\tilde c)^2) \tag{2}$
+$d Z_o^{\langle t \rangle} = d \Gamma_o^{\langle t \rangle} * \Gamma_o^{\langle t \rangle}*(1-\Gamma_o^{\langle t \rangle})  \tag{2}$
 
-$d\Gamma_u^{\langle t \rangle} = dc_{next}*\tilde c^{\langle t \rangle} + \Gamma_o^{\langle t \rangle} (1-\tanh(c_{next})^2) * \tilde c^{\langle t \rangle} * da_{next}*\Gamma_u^{\langle t \rangle}*(1-\Gamma_u^{\langle t \rangle})\tag{3}$
+$d\tilde c^{\langle t \rangle} = dc_{next}*\Gamma_u^{\langle t \rangle}+ da_{next} * \Gamma_o^{\langle t \rangle} (1-\tanh(c_{next})^2) * \Gamma_u^{\langle t \rangle}  \tag{3}$
 
-$d\Gamma_f^{\langle t \rangle} = dc_{next}*\tilde c_{prev} + \Gamma_o^{\langle t \rangle} (1-\tanh(c_{next})^2) * c_{prev} * da_{next}*\Gamma_f^{\langle t \rangle}*(1-\Gamma_f^{\langle t \rangle})\tag{4}$
+$dZ^{\langle t \rangle}_{\tilde c^{t}} = d\tilde c^{\langle t \rangle}  * (1 - (\tilde c^{\langle t \rangle})^2) \tag{4} $
+
+$d\Gamma_u^{\langle t \rangle} = dc_{next}*\tilde c^{\langle t \rangle} + da_{next}*\Gamma_o^{\langle t \rangle} (1-\tanh(c_{next})^2) * \tilde c^{\langle t \rangle}\tag{5}$
+
+$dZ_u^{\langle t \rangle} = d\Gamma_u^{\langle t \rangle} *\Gamma_u^{\langle t \rangle}*(1-\Gamma_u^{\langle t \rangle})\tag{6}$
+
+$d\Gamma_f^{\langle t \rangle} = dc_{next} * c_{prev} + da_{next}*\Gamma_o^{\langle t \rangle} (1-\tanh(c_{next})^2) *  c_{prev} \tag{7}$
+
+$dZ_f^{\langle t \rangle} = d\Gamma_f^{\langle t \rangle} *\Gamma_f^{\langle t \rangle}*(1-\Gamma_f^{\langle t \rangle})\tag{8}$
 
 **参数求偏导 ：**
 
-$ dW_f = d\Gamma_f^{\langle t \rangle} * \begin{pmatrix} a_{prev} \\ x_t\end{pmatrix}^T \tag{5} $
-$ dW_u = d\Gamma_u^{\langle t \rangle} * \begin{pmatrix} a_{prev} \\ x_t\end{pmatrix}^T \tag{6} $
- $ dW_c = d\tilde c^{\langle t \rangle} * \begin{pmatrix} a_{prev} \\ x_t\end{pmatrix}^T \tag{7} $
-$ dW_o = d\Gamma_o^{\langle t \rangle} * \begin{pmatrix} a_{prev} \\ x_t\end{pmatrix}^T \tag{8}$
+$ dW_f = dZ_f^{\langle t \rangle} . \begin{pmatrix} a_{prev} \\ x_t\end{pmatrix}^T \tag{9} $
+$ dW_u = dZ_u^{\langle t \rangle} . \begin{pmatrix} a_{prev} \\ x_t\end{pmatrix}^T \tag{10} $
+ $ dW_c = dZ_{\tilde c} ^{\langle t \rangle} . \begin{pmatrix} a_{prev} \\ x_t\end{pmatrix}^T \tag{11} $
+$ dW_o = dZ_o^{\langle t \rangle} . \begin{pmatrix} a_{prev} \\ x_t\end{pmatrix}^T \tag{12}$
 
-为了计算$db_f, db_u, db_c, db_o$ 需要各自对$d\Gamma_f^{\langle t \rangle}, d\Gamma_u^{\langle t \rangle}, d\tilde c^{\langle t \rangle}, d\Gamma_o^{\langle t \rangle}$ 求和。
+为了计算$db_f, db_u, db_c, db_o$ 需要各自对$dZ_f^{\langle t \rangle}, dZ_u^{\langle t \rangle}, dZ_{\tilde c}^{\langle t \rangle}, dZ_o^{\langle t \rangle}$ 关于 **batch** 求和。
 
 最后，计算隐藏状态、记忆状态和输入的偏导数：
 
-$ da_{prev} = W_f^T*d\Gamma_f^{\langle t \rangle} + W_u^T * d\Gamma_u^{\langle t \rangle}+ W_c^T * d\tilde c^{\langle t \rangle} + W_o^T * d\Gamma_o^{\langle t \rangle} \tag{9}$
+$ dc_{prev} = dc_{next} * \Gamma_f^{\langle t \rangle} + da_{next} * \Gamma_o^{\langle t \rangle} * (1- \tanh(c_{next})^2)*\Gamma_f^{\langle t \rangle} \tag{13}$
 
-$ dc_{prev} = dc_{next}\Gamma_f^{\langle t \rangle} + \Gamma_o^{\langle t \rangle} * (1- \tanh(c_{next})^2)*\Gamma_f^{\langle t \rangle}*da_{next} \tag{10}$
-$ dx^{\langle t \rangle} = W_f^T*d\Gamma_f^{\langle t \rangle} + W_u^T * d\Gamma_u^{\langle t \rangle}+ W_c^T * d\tilde c_t + W_o^T * d\Gamma_o^{\langle t \rangle}\tag{11} $
+$ dx^{\langle t \rangle} = W_f^T \cdot dZ_f^{\langle t \rangle} + W_u^T \cdot dZ_u^{\langle t \rangle}+ W_c^T \cdot dZ_{\tilde c}^{\langle t \rangle} + W_o^T \cdot dZ_o^{\langle t \rangle}\tag{14} $$ da_{prev} = W_f^T \cdot dZ_f^{\langle t \rangle} + W_u^T \cdot dZ_u^{\langle t \rangle}+ W_c^T \cdot dZ_{\tilde c}^{\langle t \rangle} + W_o^T \cdot dZ_o^{\langle t \rangle} \tag{15}$
+
+（$da_{prev}$ 和 $dx^t$ 计算中的 $W$ 矩阵均取对应位置）
 
 
 这就是**LSTM**，我们什么时候应该用**GRU**？什么时候用**LSTM**？这里没有统一的准则。而且即使我先讲解了**GRU**，在深度学习的历史上，**LSTM**也是更早出现的，而**GRU**是最近才发明出来的，它可能源于**Pavia**在更加复杂的**LSTM**模型中做出的简化。研究者们在很多不同问题上尝试了这两种模型，看看在不同的问题不同的算法中哪个模型更好，所以这不是个学术和高深的算法，我才想要把这两个模型展示给你。
