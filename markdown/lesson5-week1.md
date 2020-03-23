@@ -475,9 +475,15 @@ $ dW_o = dZ_o^{\langle t \rangle} \cdot \begin{pmatrix} a_{prev} \\ x_t\end{pmat
 
 $ dc_{prev} = dc_{next} * \Gamma_f^{\langle t \rangle} + da_{next} * \Gamma_o^{\langle t \rangle} * (1- \tanh(c_{next})^2)*\Gamma_f^{\langle t \rangle} \tag{13}$
 
-$ dx^{\langle t \rangle} = W_f^T \cdot dZ_f^{\langle t \rangle} + W_u^T \cdot dZ_u^{\langle t \rangle}+ W_c^T \cdot dZ_{\tilde c}^{\langle t \rangle} + W_o^T \cdot dZ_o^{\langle t \rangle}\tag{14} $$ da_{prev} = W_f^T \cdot dZ_f^{\langle t \rangle} + W_u^T \cdot dZ_u^{\langle t \rangle}+ W_c^T \cdot dZ_{\tilde c}^{\langle t \rangle} + W_o^T \cdot dZ_o^{\langle t \rangle} \tag{15}$
+$ dx^{\langle t \rangle} = W_f^T \cdot dZ_f^{\langle t \rangle} + W_u^T \cdot dZ_u^{\langle t \rangle}+ W_c^T \cdot dZ_{\tilde c}^{\langle t \rangle} + W_o^T \cdot dZ_o^{\langle t \rangle}\tag{14} $
 
-（$da_{prev}$ 和 $dx^t$ 计算中的 $W$ 矩阵均取对应位置）
+14的 $W$  截取 n_a 之后, （比如：$W_f = W_f[:,n_a:]$ ）
+
+$ da_{prev} = W_f^T \cdot dZ_f^{\langle t \rangle} + W_u^T \cdot dZ_u^{\langle t \rangle}+ W_c^T \cdot dZ_{\tilde c}^{\langle t \rangle} + W_o^T \cdot dZ_o^{\langle t \rangle} \tag{15}$
+
+15的 $W$ 截取n_a之前，（比如：$W_f = W_f[:,:n_a]$ ）
+
+***
 
 
 这就是**LSTM**，我们什么时候应该用**GRU**？什么时候用**LSTM**？这里没有统一的准则。而且即使我先讲解了**GRU**，在深度学习的历史上，**LSTM**也是更早出现的，而**GRU**是最近才发明出来的，它可能源于**Pavia**在更加复杂的**LSTM**模型中做出的简化。研究者们在很多不同问题上尝试了这两种模型，看看在不同的问题不同的算法中哪个模型更好，所以这不是个学术和高深的算法，我才想要把这两个模型展示给你。
