@@ -464,10 +464,10 @@ $dZ_f^{\langle t \rangle} = d\Gamma_f^{\langle t \rangle} *\Gamma_f^{\langle t \
 
 **参数求偏导 ：**
 
-$ dW_f = dZ_f^{\langle t \rangle} . \begin{pmatrix} a_{prev} \\ x_t\end{pmatrix}^T \tag{9} $
-$ dW_u = dZ_u^{\langle t \rangle} . \begin{pmatrix} a_{prev} \\ x_t\end{pmatrix}^T \tag{10} $
- $ dW_c = dZ_{\tilde c} ^{\langle t \rangle} . \begin{pmatrix} a_{prev} \\ x_t\end{pmatrix}^T \tag{11} $
-$ dW_o = dZ_o^{\langle t \rangle} . \begin{pmatrix} a_{prev} \\ x_t\end{pmatrix}^T \tag{12}$
+$ dW_f = dZ_f^{\langle t \rangle} \cdot \begin{pmatrix} a_{prev} \\ x_t\end{pmatrix}^T \tag{9} $
+$ dW_u = dZ_u^{\langle t \rangle} \cdot \begin{pmatrix} a_{prev} \\ x_t\end{pmatrix}^T \tag{10} $
+ $ dW_c = dZ_{\tilde c} ^{\langle t \rangle} \cdot \begin{pmatrix} a_{prev} \\ x_t\end{pmatrix}^T \tag{11} $
+$ dW_o = dZ_o^{\langle t \rangle} \cdot \begin{pmatrix} a_{prev} \\ x_t\end{pmatrix}^T \tag{12}$
 
 为了计算$db_f, db_u, db_c, db_o$ 需要各自对$dZ_f^{\langle t \rangle}, dZ_u^{\langle t \rangle}, dZ_{\tilde c}^{\langle t \rangle}, dZ_o^{\langle t \rangle}$ 关于 **batch** 求和。
 
